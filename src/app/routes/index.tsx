@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { Login } from "app/pages/login/Login";
+import { TelaConsulta2 } from "app/pages";
 import { useAppThemeContext } from "app/shared/contexts/ThemeContext";
 import { Route, Routes, Navigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ export const AppRoutes = () => {
           </Button>
         }
       />
-      <Route path="/entrar" element={<Login />} />
+      <Route path="/pesquisa" element={<TelaConsulta2 />} />
 
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>

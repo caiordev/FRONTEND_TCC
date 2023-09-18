@@ -3,6 +3,7 @@ import { cyan, red } from "@mui/material/colors";
 
 export const DarkTheme = createTheme({
   palette: {
+    mode: "dark",
     primary: {
       main: "#8D0333",
       dark: "#5A021F",
@@ -19,5 +20,8 @@ export const DarkTheme = createTheme({
       default: "#202124",
       paper: "#303134",
     },
+  },
+  typography: {
+    allVariants: { color: "white" },
   },
 });
