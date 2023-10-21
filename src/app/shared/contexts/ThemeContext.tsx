@@ -16,13 +16,13 @@ interface IThemeContextData {
 
 const ThemeContext = createContext({} as IThemeContextData);
 
-export const useAppThemeContext = () => {
-  return useContext(ThemeContext);
-};
-
 interface IAppThemeProviderProps {
   children: React.ReactNode;
 }
+
+export const useAppThemeContext = () => {
+  return useContext(ThemeContext);
+};
 
 export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({
   children,
@@ -35,8 +35,7 @@ export const AppThemeProvider: React.FC<IAppThemeProviderProps> = ({
   }, []);
 
   const theme = useMemo(() => {
-    if (themeName === "light") return LightTheme;
-
+    if (themeName == "light") return LightTheme;
     return DarkTheme;
   }, [themeName]);
 
