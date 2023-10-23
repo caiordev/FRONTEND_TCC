@@ -14,8 +14,13 @@ export const AppRoutes = () => {
       },
       {
         label: "Patentes",
-        icon: "star",
+        icon: "description",
         path: "/patentes",
+      },
+      {
+        label: "Pesquisas",
+        icon: "search",
+        path: "/pesquisas",
       },
     ]);
   }, []);
