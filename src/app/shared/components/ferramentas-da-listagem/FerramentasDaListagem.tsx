@@ -8,23 +8,40 @@ import {
   Icon,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { ModalUser } from "../modal/ModalUser";
 
 interface IFerramentasDaListagemProps {
   textoDaBusca?: string;
   mostrarInputBusca?: boolean;
   aoMudarTextoDeBusca?: (novoTexto: string) => void;
+  textoDaData?: string;
+  mostrarInputData?: boolean;
+  aoMudarTextoDaData?: (novoTexto: string) => void;
+  textoDaLista?: string;
+  mostrarInputLista?: boolean;
+  aoMudarTextoDaLista?: (novoTexto: string) => void;
   textoBotaoNovo?: string;
   mostrarBotaoNovo?: boolean;
   aoClicarEmNovo?: () => void;
+  posicaoBotao?: string;
+  mostrarBotaoModal?: boolean;
 }
 
 export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
   textoDaBusca = "",
   mostrarInputBusca = false,
   aoMudarTextoDeBusca,
+  textoDaData = "",
+  mostrarInputData = false,
+  aoMudarTextoDaData,
+  textoDaLista = "",
+  mostrarInputLista = false,
+  aoMudarTextoDaLista,
   textoBotaoNovo = "Novo",
   mostrarBotaoNovo = true,
   aoClicarEmNovo,
+  posicaoBotao = "end",
+  mostrarBotaoModal = false,
 }) => {
   const theme = useTheme();
   return (
@@ -38,7 +55,7 @@ export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
       alignItems="center"
       component={Paper}
     >
-      <Box flex={1} display="flex" justifyContent="start">
+      <Box display="flex" justifyContent="start" gap={1}>
         {mostrarInputBusca && (
           <TextField
             InputProps={{
@@ -55,8 +72,29 @@ export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
             onChange={(e) => aoMudarTextoDeBusca?.(e.target.value)}
           />
         )}
+        {mostrarInputData && (
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Pesquisar..."
+            type="date"
+            value={textoDaData}
+            onChange={(e) => aoMudarTextoDaData?.(e.target.value)}
+          />
+        )}
+
+        {mostrarInputLista && (
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Pesquisar..."
+            type="tel"
+            value={textoDaLista}
+            onChange={(e) => aoMudarTextoDaLista?.(e.target.value)}
+          />
+        )}
       </Box>
-      <Box display="flex" justifyContent="end">
+      <Box display="flex" justifyContent={posicaoBotao} flex={1}>
         {mostrarBotaoNovo && (
           <Button
             color="primary"
@@ -68,6 +106,11 @@ export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
           </Button>
         )}
       </Box>
+      {mostrarBotaoModal && (
+        <Box display="flex" justifyContent="start">
+          <ModalUser />
+        </Box>
+      )}
     </Box>
   );
 };

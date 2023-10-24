@@ -1,4 +1,5 @@
-import { Dashboard, TelaConsulta2 } from "app/pages";
+import { Dashboard, TelaDeConsultas } from "app/pages";
+import { TelaDePatentes } from "app/pages/patentes/TelaDePatentes";
 import { useDrawerContext } from "app/shared/contexts";
 import { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
@@ -27,8 +28,8 @@ export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/pagina-inicial" element={<Dashboard />} />
-      <Route path="/pesquisa" element={<TelaConsulta2 />} />
-
+      <Route path="/pesquisas" element={<TelaDeConsultas />} />
+      <Route path="/patentes" element={<TelaDePatentes />} />
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
   );

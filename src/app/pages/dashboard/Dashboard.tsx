@@ -6,11 +6,7 @@ export const Dashboard = () => {
     <LayoutBaseDePagina
       titulo="Página Inicial"
       barraDeFerramentas={
-        <FerramentasDaListagem
-          mostrarInputBusca={true}
-          textoBotaoNovo="Nova"
-          textoDaBusca=""
-        />
+        <FerramentasDaListagem mostrarBotaoNovo={false} mostrarBotaoModal />
       }
     >
       Testando
