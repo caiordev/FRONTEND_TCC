@@ -23,7 +23,7 @@ export const ModalUser: React.FC = () => {
     setOpen(false);
   };
   return (
-    <Box>
+    <Box display="flex" justifyContent="center" justifyItems="center">
       <Button variant="contained" onClick={handleOpen}>
         Adicionar Usuário
       </Button>

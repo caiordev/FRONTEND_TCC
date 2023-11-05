@@ -78,7 +78,8 @@ export const MenuLateral: React.FC<MenuLateralProps> = ({ children }) => {
           >
             <Avatar
               sx={{ height: theme.spacing(12), width: theme.spacing(12) }}
-              src=""
+              src="/ufma.jpg"
+              alt="Logo UFMA"
             ></Avatar>
           </Box>
 

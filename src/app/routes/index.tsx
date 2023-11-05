@@ -1,5 +1,5 @@
-import { Dashboard, TelaDeConsultas } from "app/pages";
-import { TelaDePatentes } from "app/pages/patentes/TelaDePatentes";
+import { TelaDeConsultas, PaginaInicial } from "app/pages";
+import { TelaDeDetalheDePatente } from "app/pages/patentes/TelaDeDetalheDePatente";
 import { useDrawerContext } from "app/shared/contexts";
 import { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
@@ -16,7 +16,7 @@ export const AppRoutes = () => {
       {
         label: "Patentes",
         icon: "description",
-        path: "/patentes",
+        path: "/patentes/detalhe/nova",
       },
       {
         label: "Pesquisas",
@@ -27,9 +27,18 @@ export const AppRoutes = () => {
   }, []);
   return (
     <Routes>
-      <Route path="/pagina-inicial" element={<Dashboard />} />
+      <Route path="/pagina-inicial" element={<PaginaInicial />} />
+
       <Route path="/pesquisas" element={<TelaDeConsultas />} />
-      <Route path="/patentes" element={<TelaDePatentes />} />
+
+      <Route
+        path="/patentes/detalhe/:ID"
+        element={<TelaDeDetalheDePatente />}
+      />
+      <Route
+        path="/patentes/detalhe/nova"
+        element={<TelaDeDetalheDePatente />}
+      />
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
   );

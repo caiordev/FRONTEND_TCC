@@ -8,7 +8,8 @@ import {
   Icon,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { ModalUser } from "../modal/ModalUser";
+import { Environment } from "app/shared/environment";
+import { ModalUser } from "../modal-de-usuario/ModalUser";
 
 interface IFerramentasDaListagemProps {
   textoDaBusca?: string;
@@ -87,7 +88,7 @@ export const FerramentasDaListagem: React.FC<IFerramentasDaListagemProps> = ({
           <TextField
             variant="outlined"
             size="small"
-            placeholder="Pesquisar..."
+            placeholder={Environment.INPUT_DE_BUSCA}
             type="tel"
             value={textoDaLista}
             onChange={(e) => aoMudarTextoDaLista?.(e.target.value)}

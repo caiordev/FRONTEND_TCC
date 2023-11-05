@@ -1,64 +1,124 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Api } from "../ApiConfig";
-import { ApiException } from "../ApiException";
+import { Api } from "../axios-config";
 
-interface ITarefa {
-  id: number;
-  title: string;
-  isCompleted: boolean;
+export interface IDetalhePatente {
+  ID?: string;
+  PROTOCOLO: number;
+  NATUREZA: string;
+  DEPOSITO?: Date;
+  TITULO: string;
+  INVENTORES: string;
+  IPC?: string;
+  CPC?: string;
+  COTITULAR: string;
+  QREIVIND: number;
+  STATUS: string;
+  PROCESSO: string;
+  CONCESSAO?: string;
 }
 
-const getAll = async (): Promise<ITarefa[] | ApiException> => {
+export interface IListagemPatente {
+  ID: string;
+  PROTOCOLO: number;
+  NATUREZA: string;
+  DEPOSITO?: string;
+  TITULO: string;
+  INVENTORES: string;
+  IPC?: string;
+  CPC?: string;
+  COTITULAR: string;
+  QREIVIND: number;
+  STATUS: string;
+  PROCESSO: string;
+  CONCESSAO?: string;
+}
+
+const getAllPatente = async (
+  protocolo = "",
+  titulo = "",
+  status = "",
+  data1 = "",
+  data2 = ""
+): Promise<IListagemPatente[] | Error> => {
   try {
-    const { data } = await Api().get("/patente");
-    return data;
-  } catch (error: any) {
-    return new ApiException(error.message || "Erro ao consultar a API");
+    const { data } = await Api.get(
+      `/consultaPatente?PROTOCOLO=${protocolo}&TITULO=${titulo}&STATUS=${status}&DEPOSITO1=${data1}&DEPOSITO2=${data2}`
+    );
+    if (data) {
+      return data;
+    }
+
+    return new Error("Error ao listar as patentes");
+  } catch (error) {
+    console.error(error);
+    return new Error(
+      (error as { message: string }).message || "Error ao listar as patentes"
+    );
   }
 };
 
-const getById = async (id: number): Promise<ITarefa | ApiException> => {
+const getByIdPatente = async (ID: string): Promise<IDetalhePatente | Error> => {
   try {
-    const { data } = await Api().get(`/patente/${id}`);
-    return data;
-  } catch (error: any) {
-    return new ApiException(error.message || "Erro ao consultar a API");
-  }
-};
-const create = async (
-  dataToCreate: Omit<ITarefa, "id">
-): Promise<ITarefa | ApiException> => {
-  try {
-    const { data } = await Api().post("/patente", dataToCreate);
-    return data;
-  } catch (error: any) {
-    return new ApiException(error.message || "Erro ao criar o registro");
-  }
-};
-const updateById = async (
-  id: number,
-  dataToUpdate: ITarefa
-): Promise<ITarefa | ApiException> => {
-  try {
-    const { data } = await Api().put(`/patente/${id}`, dataToUpdate);
-    return data;
-  } catch (error: any) {
-    return new ApiException(error.message || "Erro ao atualizar o registro");
-  }
-};
-const deleteById = async (id: number): Promise<undefined | ApiException> => {
-  try {
-    await Api().delete(`/patente/${id}`);
-    return undefined;
-  } catch (error: any) {
-    return new ApiException(error.message || "Erro ao apagar o registro");
+    const { data } = await Api.get(`/patente/${ID}`);
+    if (data) {
+      return data;
+    }
+    return new Error("Error ao consultar a patente");
+  } catch (error) {
+    console.error(error);
+    return new Error(
+      (error as { message: string }).message || "Error ao consultar a patente"
+    );
   }
 };
 
-export const PatentesService = {
-  getAll,
-  create,
-  getById,
-  updateById,
-  deleteById,
+const createPatente = async (
+  dados: Omit<IDetalhePatente, "ID">
+): Promise<number | Error> => {
+  try {
+    const { data } = await Api.post<IDetalhePatente>("/patente", dados);
+    if (data) {
+      return Number(data.ID);
+    }
+    return new Error("Erro ao cadastrar a patente");
+  } catch (error) {
+    console.error(error);
+    return new Error(
+      (error as { message: string }).message || "Error ao cadastrar a patente"
+    );
+  }
+};
+
+const updateByIdPatente = async (
+  ID: string,
+  dados: IDetalhePatente
+): Promise<void | Error> => {
+  try {
+    await Api.put(`/patente/${ID}`, dados);
+  } catch (error) {
+    console.error(error);
+    return new Error(
+      (error as { message: string }).message || "Error as alterar a patente"
+    );
+  }
+};
+
+const deleteByIdPatente = async (ID: string): Promise<void | Error> => {
+  try {
+    await Api.delete(`/patente/${ID}`);
+  } catch (error) {
+    console.error(error);
+    return new Error(
+      (error as { message: string }).message || "Erro a deletar"
+    );
+  }
+};
+
+//const consultaPatente = async (): Promise<any> => {};
+
+export const PatenteService = {
+  getAllPatente,
+  createPatente,
+  getByIdPatente,
+  updateByIdPatente,
+  deleteByIdPatente,
 };
