@@ -1,5 +1,14 @@
-import { Box, Button, Modal, TextField } from "@mui/material";
-import React from "react";
+import { Box, Button, Modal, Paper } from "@mui/material";
+import { FormHandles } from "@unform/core";
+import { Form } from "@unform/web";
+import { IVFormErrors, VTextField } from "app/shared/forms";
+import {
+  IDetalheUsuario,
+  UsuarioService,
+} from "app/shared/services/api/usuários/UsuarioService";
+import React, { useRef } from "react";
+import { AutoCompleteModal } from "./components/AutoComplete";
+import * as yup from "yup";
 
 const style = {
   // eslint-disable-next-line @typescript-eslint/prefer-as-const
@@ -14,16 +23,64 @@ const style = {
   p: 4,
 };
 
+export interface IDetalheUsuarioProps {
+  NOME: string;
+  EMAIL: string;
+  SENHA: string;
+  TIPO: string;
+}
+
+const formValidationUser: yup.Schema<IDetalheUsuarioProps> = yup
+  .object()
+  .shape({
+    NOME: yup.string().required(),
+    EMAIL: yup.string().email().required(),
+    SENHA: yup.string().required(),
+    TIPO: yup.string().required(),
+  });
+
 export const ModalUser: React.FC = () => {
   const [open, setOpen] = React.useState(false);
+  const formRef = useRef<FormHandles>(null);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleClick = () => {
-    console.log("Usuário adicionado");
-    setOpen(false);
+  const handleClick = (dados: IDetalheUsuario) => {
+    formValidationUser
+      .validate(dados, { abortEarly: false })
+      .then((dadosValidados) => {
+        UsuarioService.createUsuario(dadosValidados).then((result) => {
+          if (result instanceof Error) {
+            alert(result.message);
+          } else {
+            formRef.current?.setData({
+              NOME: "",
+              EMAIL: "",
+              SENHA: "",
+              TIPO: "",
+            });
+          }
+        });
+      })
+      .catch((errors: yup.ValidationError) => {
+        const validationErrors: IVFormErrors = {};
+
+        errors.inner.forEach((error) => {
+          if (!error.path) return;
+
+          validationErrors[error.path] = error.message;
+        });
+
+        formRef.current?.setErrors(validationErrors);
+      });
   };
   return (
-    <Box display="flex" justifyContent="center" justifyItems="center">
+    <Box
+      display="flex"
+      justifyContent="center"
+      justifyItems="center"
+      component={Paper}
+      padding={1}
+    >
       <Button variant="contained" onClick={handleOpen}>
         Adicionar Usuário
       </Button>
@@ -34,35 +91,48 @@ export const ModalUser: React.FC = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style} display="flex" flexDirection="column" gap={1}>
-          <TextField
-            label="Nome"
-            variant="outlined"
-            size="small"
-            placeholder="Digite o nome..."
-          />
-          <TextField
-            label="Email"
-            variant="outlined"
-            size="small"
-            placeholder="Digite o Email..."
-            type="email"
-          />
-          <TextField
-            label="Senha"
-            variant="outlined"
-            size="small"
-            placeholder="Digite a Senha..."
-            type="password"
-          />
-          <TextField
-            label="Tipo"
-            variant="outlined"
-            size="small"
-            placeholder="Digite o Tipo de Usuário..."
-            type="number"
-          />
+          <Form ref={formRef} onSubmit={handleClick}>
+            <VTextField
+              sx={{ width: 300 }}
+              margin="normal"
+              name="NOME"
+              label="Nome"
+              variant="outlined"
+              size="small"
+              value={""}
+              placeholder="Digite o nome..."
+            />
+            <VTextField
+              sx={{ width: 300 }}
+              margin="normal"
+              name="EMAIL"
+              label="Email"
+              variant="outlined"
+              size="small"
+              value={""}
+              placeholder="Digite o Email..."
+              type="email"
+            />
+            <VTextField
+              sx={{ width: 300 }}
+              margin="normal"
+              name="SENHA"
+              label="Senha"
+              variant="outlined"
+              size="small"
+              value={""}
+              placeholder="Digite a Senha..."
+              type="password"
+            />
+            <AutoCompleteModal />
+          </Form>
           <Box display="flex" justifyContent="center">
-            <Button variant="contained" onClick={handleClick}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                formRef.current?.submitForm();
+              }}
+            >
               Adicionar
             </Button>
           </Box>

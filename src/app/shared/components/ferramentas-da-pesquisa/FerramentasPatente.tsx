@@ -32,11 +32,12 @@ import {
   PatenteService,
 } from "app/shared/services/api/patente/PatenteService";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Form, useNavigate, useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Form, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "app/shared/hooks";
 import { useDrawerContext } from "app/shared/contexts";
 import { Environment } from "app/shared/environment";
+import { patentesPDF } from "app/pages/tela-consultas/Reports/patentes";
 
 const lista = [
   "Anulado",
@@ -61,10 +62,12 @@ export const FerramentaDaPatente: React.FC = () => {
   const [searchKey, setSearchKey] = useState(0);
   const [valueData1teste, setValueData1] = useState("");
   const [valueData2teste, setValueData2] = useState("");
+  const [errorData2, setErrorData2] = useState("");
 
   const [rows, setRows] = useState<IListagemPatente[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+  const [patentes, setPatentes] = useState<IListagemPatente[]>([]);
 
   const { debounce } = useDebounce();
   const navigate = useNavigate();
@@ -90,12 +93,10 @@ export const FerramentaDaPatente: React.FC = () => {
   const valueData1 = useMemo(() => {
     return searhParams.get("DATA1") || "";
   }, [searhParams]);
-  console.log(valueData1);
 
   const valueData2 = useMemo(() => {
     return searhParams.get("DATA2") || "";
   }, [searhParams]);
-  console.log(valueData2);
 
   const handleInputTitulo = (texto: string) => {
     setSearchParams({ TITULO: texto });
@@ -109,6 +110,11 @@ export const FerramentaDaPatente: React.FC = () => {
   };
   const handleInputData2 = (texto: string) => {
     setValueData2(texto);
+    if (texto < valueData1) {
+      setErrorData2("O valor deve ser maior");
+    } else {
+      setErrorData2("");
+    }
   };
 
   const handleLabel = (texto: string) => {
@@ -159,6 +165,7 @@ export const FerramentaDaPatente: React.FC = () => {
       return false;
     }
   };
+
   useEffect(() => {
     if (botaoClicado) {
       debounce(() => {
@@ -174,9 +181,9 @@ export const FerramentaDaPatente: React.FC = () => {
           if (result instanceof Error) {
             alert(result.message);
           } else {
-            console.log(result);
             setTotalCount(result.length);
             setRows(result);
+            setPatentes(result);
           }
         });
       });
@@ -270,7 +277,6 @@ export const FerramentaDaPatente: React.FC = () => {
           {protocoloSelecionado() && (
             <TextField
               size="small"
-              type="number"
               value={valueProtocolo}
               onChange={(e) => handleInputProtocolo(e.target.value)}
             />
@@ -288,6 +294,8 @@ export const FerramentaDaPatente: React.FC = () => {
             <TextField
               size="small"
               type="date"
+              error={!!errorData2}
+              helperText={errorData2}
               value={valueData2teste}
               onChange={(e) => handleInputData2(e.target.value)}
             />
@@ -325,6 +333,22 @@ export const FerramentaDaPatente: React.FC = () => {
             Buscar
           </Typography>
         </Button>
+        <Button
+          color="primary"
+          variant="contained"
+          startIcon={<Icon>picture_as_pdf</Icon>}
+          type="button"
+          onClick={() => patentesPDF(patentes)}
+        >
+          <Typography
+            variant="button"
+            whiteSpace="nowrap"
+            textOverflow="ellipsis"
+            overflow="hidden"
+          >
+            Gerar PDF
+          </Typography>
+        </Button>
       </Box>
       <Box flex={1} sx={{ overflowX: "hidden", overflowY: "auto", m: 1 }}>
         <TableContainer component={Paper} variant="outlined">
@@ -341,7 +365,11 @@ export const FerramentaDaPatente: React.FC = () => {
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.ID}>
-                  <TableCell>{row.PROTOCOLO}</TableCell>
+                  <TableCell>
+                    <Link to={`/patentes/detalhes/${row.ID}`}>
+                      {row.PROTOCOLO}
+                    </Link>
+                  </TableCell>
                   <TableCell>{formatarData(row.DEPOSITO)}</TableCell>
                   <TableCell>{row.STATUS}</TableCell>
                   <TableCell>{row.TITULO}</TableCell>

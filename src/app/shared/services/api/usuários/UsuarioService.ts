@@ -5,7 +5,7 @@ export interface IDetalheUsuario {
   NOME: string;
   EMAIL: string;
   SENHA: string;
-  TIPO: number;
+  TIPO: string;
 }
 
 const getByIdUsuario = async (ID: string): Promise<IDetalheUsuario | Error> => {

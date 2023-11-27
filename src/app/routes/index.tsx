@@ -1,5 +1,6 @@
 import { TelaDeConsultas, PaginaInicial } from "app/pages";
 import { TelaDeDetalheDePatente } from "app/pages/patentes/TelaDeDetalheDePatente";
+import { DetalhesDaPatente } from "app/shared/components/detalhes-da-patente/DetalhesDaPatente";
 import { useDrawerContext } from "app/shared/contexts";
 import { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
@@ -39,6 +40,7 @@ export const AppRoutes = () => {
         path="/patentes/detalhe/nova"
         element={<TelaDeDetalheDePatente />}
       />
+      <Route path="/patentes/detalhes/:ID" element={<DetalhesDaPatente />} />
       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
     </Routes>
   );

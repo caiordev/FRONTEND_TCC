@@ -1,44 +1,70 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Box,
+  debounce,
   Grid,
   LinearProgress,
-  MenuItem,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
-import { FormHandles, Scope } from "@unform/core";
-import { Form } from "@unform/web";
 import { FerramentasDeDetalhe } from "app/shared/components";
-import { VTextField } from "app/shared/forms";
+import { VTextField, VForm, useVForm, IVFormErrors } from "app/shared/forms";
 import { LayoutBaseDePagina } from "app/shared/layouts/LayoutBaseDePagina";
-import { PatenteService } from "app/shared/services/api/patente/PatenteService";
-import React, { useRef } from "react";
+import {
+  IDetalhePatente,
+  IListagemPatente,
+  PatenteService,
+} from "app/shared/services/api/patente/PatenteService";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { addMonths, parseISO } from "date-fns";
+import * as yup from "yup";
+import { AutoComplete } from "./components/AutoComplete";
 
-interface IPatenteData {
-  PROTOCOLO: number;
+export interface IPatenteData {
+  PROTOCOLO: string;
   NATUREZA: string;
-  DEPOSITO?: Date;
+  DEPOSITO?: string;
   TITULO: string;
   INVENTORES: string;
   IPC?: string;
   CPC?: string;
   COTITULAR: string;
   QREIVIND: number;
-  STATUS: string;
+  STATUS?: string;
   PROCESSO: string;
   CONCESSAO?: string;
 }
 
-export const TelaDeDetalheDePatente = () => {
-  let { ID = "" } = useParams<"ID">();
+const formValidationSchema: yup.Schema<IPatenteData> = yup.object().shape({
+  PROTOCOLO: yup
+    .string()
+    .required()
+    .min(12)
+    .max(12)
+    .matches(
+      /^[a-zA-z]{2}\d{10}$/,
+      "Dados inválidos. Deve começar com duas letras e depois 10 números."
+    ),
+  NATUREZA: yup.string().required(),
+  DEPOSITO: yup.string().optional(),
+  TITULO: yup.string().required(),
+  INVENTORES: yup.string().required(),
+  IPC: yup.string().optional(),
+  CPC: yup.string().optional(),
+  COTITULAR: yup.string().required(),
+  QREIVIND: yup.number().required(),
+  STATUS: yup.string().required(),
+  PROCESSO: yup.string().required(),
+  CONCESSAO: yup.string().optional(),
+});
+
+export const TelaDeDetalheDePatente: React.FC = () => {
+  const { ID = "nova" } = useParams<"ID">();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const formRef = useRef<FormHandles>(null);
+  const { formRef, save, saveAndClose, isSaveAndClose } = useVForm();
+
   const [titulo, setTitulo] = useState<string>("");
   const [protocolo, setProtocolo] = useState<number | undefined>(undefined);
   const [natureza, setNatureza] = useState<string>("");
@@ -50,6 +76,8 @@ export const TelaDeDetalheDePatente = () => {
   const [status, setStatus] = useState<string>("");
   const [processo, setProcesso] = useState<string>("");
   const [update, setUpdate] = useState(false);
+  const [inputDate1Value, setInputDate1Value] = useState<string>("");
+  const [inputDate2Value, setInputDate2Value] = useState<string>("");
 
   useEffect(() => {
     if (ID !== "nova") {
@@ -64,34 +92,39 @@ export const TelaDeDetalheDePatente = () => {
         }
       });
     } else {
-      setTitulo("");
-      setProtocolo(undefined);
-      setNatureza("");
-      setInventores("");
-      setIpc("");
-      setCpc("");
-      setCotitular("");
-      setQreivind(undefined);
-      setStatus("");
-      setProcesso("");
-      setInputDate2Value("");
+      formRef.current?.setData({
+        TITULO: "",
+        PROTOCOLO: "",
+        NATUREZA: "",
+        DEPOSITO: "",
+        INVENTORES: "",
+        IPC: "",
+        CPC: "",
+        COTITULAR: "",
+        QREIVIND: "",
+        STATUS: "",
+        PROCESSO: "",
+        CONCESSAO: "",
+      });
     }
   }, [ID, update]);
 
   const handleSave = (dados: IPatenteData) => {
     setIsLoading(true);
-    ID = "nova";
     if (ID === "nova") {
+      console.log("Creating new patent");
       PatenteService.createPatente({
         ...dados,
         CONCESSAO: inputDate2Value,
       }).then((result) => {
         setIsLoading(false);
-
         if (result instanceof Error) {
           alert(result.message);
         } else {
-          //navigate(`/patentes/detalhe/${result}`);
+          console.log(result);
+          if (isSaveAndClose()) {
+            navigate("/patentes");
+          }
         }
       });
     } else {
@@ -99,6 +132,10 @@ export const TelaDeDetalheDePatente = () => {
         setIsLoading(false);
         if (result instanceof Error) {
           alert(result.message);
+        } else {
+          if (isSaveAndClose()) {
+            navigate("/pagina-inicial");
+          }
         }
       });
     }
@@ -116,9 +153,6 @@ export const TelaDeDetalheDePatente = () => {
       });
     }
   };
-
-  const [inputDate1Value, setInputDate1Value] = useState<string>("");
-  const [inputDate2Value, setInputDate2Value] = useState<string>("");
 
   useEffect(() => {
     if (inputDate1Value) {
@@ -157,7 +191,7 @@ export const TelaDeDetalheDePatente = () => {
             formRef.current?.submitForm();
             limparCampos();
           }}
-          aoClicarEmSalvarEFechar={() => formRef.current?.submitForm()}
+          aoClicarEmSalvarEFechar={saveAndClose}
           aoClicarEmApagar={() => handleDelete(ID)}
           aoClicarEmNovo={() => {
             navigate("/patentes/detalhe/nova");
@@ -168,7 +202,7 @@ export const TelaDeDetalheDePatente = () => {
         />
       }
     >
-      <Form ref={formRef} onSubmit={handleSave}>
+      <VForm ref={formRef} onSubmit={handleSave}>
         <Box
           margin={1}
           component={Paper}
@@ -188,7 +222,6 @@ export const TelaDeDetalheDePatente = () => {
                 <VTextField
                   fullWidth
                   name="PROTOCOLO"
-                  type="number"
                   label="Protocolo"
                   disabled={isLoading}
                   value={protocolo !== undefined ? protocolo.toString() : ""}
@@ -305,14 +338,7 @@ export const TelaDeDetalheDePatente = () => {
             </Grid>
             <Grid container item direction="row">
               <Grid item xs={4} xl={4} lg={4} md={4} sm={6}>
-                <VTextField
-                  fullWidth
-                  name="STATUS"
-                  label="Status"
-                  disabled={isLoading}
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                />
+                <AutoComplete />
               </Grid>
             </Grid>
             <Grid container item direction="row">
@@ -345,7 +371,7 @@ export const TelaDeDetalheDePatente = () => {
             </Grid>
           </Grid>
         </Box>
-      </Form>
+      </VForm>
     </LayoutBaseDePagina>
   );
 };

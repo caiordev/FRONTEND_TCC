@@ -2,23 +2,7 @@ import { Api } from "../axios-config";
 
 export interface IDetalhePatente {
   ID?: string;
-  PROTOCOLO: number;
-  NATUREZA: string;
-  DEPOSITO?: Date;
-  TITULO: string;
-  INVENTORES: string;
-  IPC?: string;
-  CPC?: string;
-  COTITULAR: string;
-  QREIVIND: number;
-  STATUS: string;
-  PROCESSO: string;
-  CONCESSAO?: string;
-}
-
-export interface IListagemPatente {
-  ID: string;
-  PROTOCOLO: number;
+  PROTOCOLO: string;
   NATUREZA: string;
   DEPOSITO?: string;
   TITULO: string;
@@ -27,7 +11,23 @@ export interface IListagemPatente {
   CPC?: string;
   COTITULAR: string;
   QREIVIND: number;
-  STATUS: string;
+  STATUS?: string;
+  PROCESSO: string;
+  CONCESSAO?: string;
+}
+
+export interface IListagemPatente {
+  ID: string;
+  PROTOCOLO: string;
+  NATUREZA: string;
+  DEPOSITO?: string;
+  TITULO: string;
+  INVENTORES: string;
+  IPC?: string;
+  CPC?: string;
+  COTITULAR: string;
+  QREIVIND: number;
+  STATUS?: string;
   PROCESSO: string;
   CONCESSAO?: string;
 }
