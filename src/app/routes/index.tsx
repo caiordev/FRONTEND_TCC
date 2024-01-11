@@ -31,7 +31,6 @@ export const AppRoutes = () => {
       <Route path="/pagina-inicial" element={<PaginaInicial />} />
 
       <Route path="/pesquisas" element={<TelaDeConsultas />} />
-
       <Route
         path="/patentes/detalhe/:ID"
         element={<TelaDeDetalheDePatente />}

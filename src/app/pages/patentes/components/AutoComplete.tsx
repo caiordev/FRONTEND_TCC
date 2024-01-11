@@ -14,9 +14,10 @@ const lista = [
 ];
 
 export const AutoComplete: React.FC = () => {
-  const [selected, setSelected] = useState<string | null>("");
   const { fieldName, registerField, defaultValue, error, clearError } =
     useField("STATUS");
+
+  const [selected, setSelected] = useState<string | null>("");
   useEffect(() => {
     registerField({
       name: fieldName,
@@ -28,10 +29,20 @@ export const AutoComplete: React.FC = () => {
   return (
     <Autocomplete
       options={lista}
+      noOptionsText="Sem opções"
+      disablePortal
       value={selected}
-      renderInput={(params) => <TextField {...params} label="Status" />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Status"
+          error={!!error}
+          helperText={error}
+        />
+      )}
       onChange={(_, newValue) => {
         setSelected(newValue);
+        clearError();
       }}
     />
   );

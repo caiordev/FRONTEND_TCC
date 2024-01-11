@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 const lista = ["Admnistrador", "Usuário Comum"];
 
 export const AutoCompleteModal: React.FC = () => {
-  const [selected, setSelected] = useState<string | null>("");
   const { fieldName, registerField, defaultValue, error, clearError } =
     useField("TIPO");
+  const [selected, setSelected] = useState<string | null>("");
   useEffect(() => {
     registerField({
       name: fieldName,

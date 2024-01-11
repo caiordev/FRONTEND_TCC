@@ -12,6 +12,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useAppThemeContext, useDrawerContext } from "app/shared/contexts";
+import { useAuthContext } from "app/shared/contexts/AuthContext";
 import { useMatch, useNavigate, useResolvedPath } from "react-router-dom";
 
 interface IListItemLinkProps {
@@ -55,6 +56,7 @@ export const MenuLateral: React.FC<MenuLateralProps> = ({ children }) => {
 
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const { logout } = useAuthContext();
 
   return (
     <>
@@ -104,6 +106,12 @@ export const MenuLateral: React.FC<MenuLateralProps> = ({ children }) => {
                   <Icon>dark_mode</Icon>
                 </ListItemIcon>
                 <ListItemText primary="Altenar tema" />
+              </ListItemButton>
+              <ListItemButton onClick={logout}>
+                <ListItemIcon>
+                  <Icon>logout</Icon>
+                </ListItemIcon>
+                <ListItemText primary="Sair" />
               </ListItemButton>
             </List>
           </Box>

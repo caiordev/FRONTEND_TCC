@@ -9,10 +9,15 @@ const auth = async (
   password: string
 ): Promise<IAuth | Error> => {
   try {
-    const { data } = await Api.get("/verify", { data: { email, password } });
+    const { data } = await Api.post("/login", {
+      EMAIL: email,
+      SENHA: password,
+    });
+
     if (data) {
       return data;
     }
+
     return new Error("Erro no login");
   } catch (error) {
     console.error(error);

@@ -37,15 +37,7 @@ export interface IPatenteData {
 }
 
 const formValidationSchema: yup.Schema<IPatenteData> = yup.object().shape({
-  PROTOCOLO: yup
-    .string()
-    .required()
-    .min(12)
-    .max(12)
-    .matches(
-      /^[a-zA-z]{2}\d{10}$/,
-      "Dados inválidos. Deve começar com duas letras e depois 10 números."
-    ),
+  PROTOCOLO: yup.string().required(),
   NATUREZA: yup.string().required(),
   DEPOSITO: yup.string().optional(),
   TITULO: yup.string().required(),
@@ -110,35 +102,52 @@ export const TelaDeDetalheDePatente: React.FC = () => {
   }, [ID, update]);
 
   const handleSave = (dados: IPatenteData) => {
-    setIsLoading(true);
-    if (ID === "nova") {
-      console.log("Creating new patent");
-      PatenteService.createPatente({
-        ...dados,
-        CONCESSAO: inputDate2Value,
-      }).then((result) => {
-        setIsLoading(false);
-        if (result instanceof Error) {
-          alert(result.message);
+    formValidationSchema
+      .validate(dados, { abortEarly: false })
+      .then((dadosValidados) => {
+        setIsLoading(true);
+        if (ID === "nova") {
+          console.log("Creating new patent");
+          PatenteService.createPatente({
+            ...dadosValidados,
+            CONCESSAO: inputDate2Value,
+          }).then((result) => {
+            setIsLoading(false);
+            if (result instanceof Error) {
+              alert(result.message);
+            } else {
+              console.log(result);
+              if (isSaveAndClose()) {
+                navigate("/patentes");
+              }
+            }
+          });
         } else {
-          console.log(result);
-          if (isSaveAndClose()) {
-            navigate("/patentes");
-          }
+          PatenteService.updateByIdPatente(ID, dadosValidados).then(
+            (result) => {
+              setIsLoading(false);
+              if (result instanceof Error) {
+                alert(result.message);
+              } else {
+                if (isSaveAndClose()) {
+                  navigate("/pagina-inicial");
+                }
+              }
+            }
+          );
         }
+      })
+      .catch((errors: yup.ValidationError) => {
+        const validationErrors: IVFormErrors = {};
+
+        errors.inner.forEach((error) => {
+          if (!error.path) return;
+
+          validationErrors[error.path] = error.message;
+        });
+
+        formRef.current?.setErrors(validationErrors);
       });
-    } else {
-      PatenteService.updateByIdPatente(ID, dados).then((result) => {
-        setIsLoading(false);
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          if (isSaveAndClose()) {
-            navigate("/pagina-inicial");
-          }
-        }
-      });
-    }
   };
 
   const handleDelete = (id: string) => {
