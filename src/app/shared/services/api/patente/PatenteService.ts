@@ -71,6 +71,23 @@ const getByIdPatente = async (ID: string): Promise<IDetalhePatente | Error> => {
   }
 };
 
+const getByPatentePatente = async (
+  PROTOCOLO: string
+): Promise<IDetalhePatente | Error> => {
+  try {
+    const { data } = await Api.get(`/patente/${PROTOCOLO}`);
+    if (data) {
+      return data;
+    }
+    return new Error("deu erro nessa merda aqui");
+  } catch (error) {
+    console.error(error);
+    return new Error(
+      (error as { message: string }).message || "deu erro nessa merda aqui"
+    );
+  }
+};
+
 const createPatente = async (
   dados: Omit<IDetalhePatente, "ID">
 ): Promise<number | Error> => {
@@ -119,6 +136,7 @@ export const PatenteService = {
   getAllPatente,
   createPatente,
   getByIdPatente,
+  getByPatentePatente,
   updateByIdPatente,
   deleteByIdPatente,
 };

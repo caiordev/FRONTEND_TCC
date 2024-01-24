@@ -8,8 +8,16 @@ import {
 } from "react";
 import { AuthService } from "../services/api/auth/AuthService";
 
+interface IUser {
+  EMAIL: string;
+  ID: string;
+  NOME: string;
+  TIPO: string;
+}
+
 interface IAuthContextData {
   isAuthenticated: boolean;
+  user: IUser | null;
   login: (email: string, password: string) => Promise<string | void>;
   logout: () => void;
 }
@@ -22,39 +30,51 @@ interface IAuthProviderProps {
 }
 
 export const AuthProvider: React.FC<IAuthProviderProps> = ({ children }) => {
-  const [accessToken, setAccessToken] = useState<string>();
+  const [accessToken, setAccessToken] = useState<{
+    token?: string;
+    user?: IUser;
+  }>({});
 
   useEffect(() => {
-    const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY_ACCESS_TOKEN);
-    if (accessToken) {
-      setAccessToken(accessToken);
+    const storedAccessToken = localStorage.getItem(
+      LOCAL_STORAGE_KEY_ACCESS_TOKEN
+    );
+    if (storedAccessToken) {
+      setAccessToken(JSON.parse(storedAccessToken));
     } else {
-      setAccessToken(undefined);
+      setAccessToken({});
     }
   }, []);
 
   const handleLogin = useCallback(async (email: string, password: string) => {
     const result = await AuthService.auth(email, password);
+    console.log("result: ", result);
     if (result instanceof Error) {
       return result.message;
     } else {
       localStorage.setItem(
-        "APP_ACCESS_TOKEN",
-        JSON.stringify(result.accessToken)
+        LOCAL_STORAGE_KEY_ACCESS_TOKEN,
+        JSON.stringify(result)
       );
-      setAccessToken(result.accessToken);
+      setAccessToken(result);
     }
   }, []);
+
   const handleLogout = useCallback(() => {
     localStorage.removeItem(LOCAL_STORAGE_KEY_ACCESS_TOKEN);
-    setAccessToken(undefined);
+    setAccessToken({});
   }, []);
 
-  const isAuthenticated = useMemo(() => !!accessToken, [accessToken]);
+  const isAuthenticated = useMemo(() => !!accessToken.token, [accessToken.token]);
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login: handleLogin, logout: handleLogout }}
+      value={{
+        isAuthenticated,
+        user: accessToken.user || null,
+        login: handleLogin,
+        logout: handleLogout,
+      }}
     >
       {children}
     </AuthContext.Provider>

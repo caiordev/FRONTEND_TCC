@@ -8,6 +8,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -56,7 +57,7 @@ export const MenuLateral: React.FC<MenuLateralProps> = ({ children }) => {
 
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down("sm"));
-  const { logout } = useAuthContext();
+  const { logout, user } = useAuthContext();
 
   return (
     <>
@@ -100,6 +101,9 @@ export const MenuLateral: React.FC<MenuLateralProps> = ({ children }) => {
             </List>
           </Box>
           <Box>
+            <Typography variant="subtitle1" align="center">
+              Bem-vindo, {user?.NOME}!
+            </Typography>
             <List component="nav">
               <ListItemButton onClick={toggleTheme}>
                 <ListItemIcon>

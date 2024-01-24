@@ -2,6 +2,14 @@ import { Api } from "../axios-config";
 
 interface IAuth {
   accessToken: string;
+  user: IUser;
+}
+
+interface IUser {
+  EMAIL: string;
+  ID: string;
+  NOME: string;
+  TIPO: string;
 }
 
 const auth = async (

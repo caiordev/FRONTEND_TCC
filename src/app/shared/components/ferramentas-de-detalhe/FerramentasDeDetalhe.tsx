@@ -12,6 +12,7 @@ import { Box } from "@mui/system";
 
 interface IFerramentasDeDetalheProps {
   textoBotaoNovo?: string;
+  textoBotaoSalvar?: string;
 
   mostrarBotaoNovo?: boolean;
   mostrarBotaoVoltar?: boolean;
@@ -34,6 +35,7 @@ interface IFerramentasDeDetalheProps {
 
 export const FerramentasDeDetalhe: React.FC<IFerramentasDeDetalheProps> = ({
   textoBotaoNovo = "Novo",
+  textoBotaoSalvar = "Salvar",
   mostrarBotaoNovo = true,
   mostrarBotaoVoltar = true,
   mostrarBotaoApagar = true,
@@ -80,7 +82,7 @@ export const FerramentasDeDetalhe: React.FC<IFerramentasDeDetalheProps> = ({
             textOverflow="ellipsis"
             overflow="hidden"
           >
-            Salvar
+            {textoBotaoSalvar}
           </Typography>
         </Button>
       )}

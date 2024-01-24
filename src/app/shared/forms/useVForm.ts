@@ -3,6 +3,7 @@ import { useCallback, useRef } from "react";
 
 export const useVForm = () => {
   const formRef = useRef<FormHandles>(null);
+  const formRefAnuidade = useRef<FormHandles>(null);
   const isSavingAndNew = useRef(false);
   const isSavingAndClose = useRef(false);
 
@@ -10,6 +11,12 @@ export const useVForm = () => {
     isSavingAndNew.current = false;
     isSavingAndClose.current = false;
     formRef.current?.submitForm();
+  }, []);
+
+  const handleSaveAnuidade = useCallback(() => {
+    isSavingAndNew.current = false;
+    isSavingAndClose.current = false;
+    formRefAnuidade.current?.submitForm();
   }, []);
   const handleSaveAndNew = useCallback(() => {
     isSavingAndNew.current = true;
@@ -28,7 +35,9 @@ export const useVForm = () => {
 
   return {
     formRef,
+    formRefAnuidade,
     save: handleSave,
+    saveAnuidade: handleSaveAnuidade,
     saveAndNew: handleSaveAndNew,
     saveAndClose: handleSaveAndClose,
     isSaveAndNew: handleIsSaveAndNew,

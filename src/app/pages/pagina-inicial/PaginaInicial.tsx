@@ -1,5 +1,6 @@
 import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { ModalUser } from "app/shared/components/modal-de-usuario/ModalUser";
+import { useAuthContext } from "app/shared/contexts/AuthContext";
 import { LayoutBaseDePagina } from "app/shared/layouts/LayoutBaseDePagina";
 import {
   IListagemPatente,
@@ -10,6 +11,7 @@ import { useEffect, useState } from "react";
 export const PaginaInicial = () => {
   const [isLoadingPatentes, setIsLoadingPatentes] = useState(false);
   const [patente, setPatente] = useState<IListagemPatente[]>([]);
+  const { user } = useAuthContext();
   useEffect(() => {
     setIsLoadingPatentes(true);
     PatenteService.getAllPatente().then((result) => {
@@ -25,7 +27,10 @@ export const PaginaInicial = () => {
   return (
     <LayoutBaseDePagina
       titulo="Página Inicial"
-      barraDeFerramentas={<ModalUser />}
+      barraDeFerramentas={
+        user?.TIPO !== "Usuário Comum" &&
+        user?.TIPO !== "Servidor" && <ModalUser />
+      }
     >
       <Box width="100%" display="flex">
         <Grid container margin={2}>

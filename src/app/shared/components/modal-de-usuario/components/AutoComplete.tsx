@@ -3,7 +3,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { useField } from "@unform/core";
 import { useEffect, useState } from "react";
 
-const lista = ["Admnistrador", "Usuário Comum"];
+const lista = ["Servidor", "Usuário Comum"];
 
 export const AutoCompleteModal: React.FC = () => {
   const { fieldName, registerField, defaultValue, error, clearError } =
